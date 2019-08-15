@@ -1,2 +1,1 @@
-name = "storage"
-from storage import *
+from .storage import *
