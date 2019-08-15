@@ -6,7 +6,7 @@ from itertools import chain
 from urllib.parse import urlparse
 from google.cloud import storage
 
-from lib.json import dump_json, load_json, read_json, save_json
+from helpers.json import dump_json, load_json, read_json, save_json
 
 get_bucket_name = lambda f: urlparse(f).netloc
 get_filename = lambda f: urlparse(f).path[1:]
