@@ -1,0 +1,8 @@
+
+venv
+__pycache__
+*.json
+*.csv
+*.tsv
+*.zip
+.DS_STORE
