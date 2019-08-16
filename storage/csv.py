@@ -1,6 +1,7 @@
 
 import os
 import csv
+import numpy as np
 
 def save_csv(data, filename, fieldnames = None):
     _, extension = os.path.splitext(filename)
