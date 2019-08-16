@@ -1,11 +1,11 @@
 
 import os
-import csv
 import numpy as np
 from itertools import chain
 from urllib.parse import urlparse
 from google.cloud import storage
 
+from .csv import save_csv
 from .json import dump_json, load_json, read_json, save_json
 
 get_bucket_name = lambda f: urlparse(f).netloc
@@ -22,17 +22,6 @@ list_files = lambda d: [blob.name for blob in list_blobs(d)]
 
 # Helpers
 is_supported_file_format = lambda f: True if os.path.splitext(f)[-1] in ['.json', '.tsv', '.csv'] else False
-
-# Get the latest item from the directory or gcs bucket
-def get_latest(directory: str):
-    preloaded_files = listdir(directory)
-    if len(preloaded_files) == 0:
-        return
-
-    preloaded_files.sort()
-    latest_filename = directory + '/' + preloaded_files.pop().rsplit('/', 1)[-1]
-    listings = get(latest_filename)
-    return listings[-1]
 
 def listdir(directory: str):
     if is_gcs_bucket(directory):
@@ -68,22 +57,3 @@ def save(data, filename):
             return save_json(data, filename)
         else:
             return save_csv(data, filename)
-
-def save_csv(data, filename, fieldnames = None):
-    _, extension = os.path.splitext(filename)
-    if extension == '.tsv':
-        delimiter = '\t'
-    else:
-        delimiter = ','
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-    with open(filename, 'w') as out:
-        if type(data[0]) is dict:
-            if fieldnames is None:
-                fieldnames = np.unique(list(chain(*[d.keys() for d in data])))
-            writer = csv.DictWriter(out, delimiter=delimiter, fieldnames=fieldnames)
-            writer.writeheader()
-        else:
-            writer = csv.writer(out, delimiter=delimiter)
-            if type(data[0]) is str:
-                data = [[' '.join(d.split())] for d in data]
-        writer.writerows(data)
