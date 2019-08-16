@@ -4,12 +4,10 @@ import csv
 import numpy as np
 from itertools import chain
 
+get_delimiter = lambda f: '\t' if os.path.splitext(f)[-1] == '.tsv' else ','
+
 def save_csv(data, filename, fieldnames = None):
-    _, extension = os.path.splitext(filename)
-    if extension == '.tsv':
-        delimiter = '\t'
-    else:
-        delimiter = ','
+    delimiter = get_delimiter(filename)
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as out:
         if type(data[0]) is dict:
@@ -22,3 +20,10 @@ def save_csv(data, filename, fieldnames = None):
             if type(data[0]) is str:
                 data = [[' '.join(d.split())] for d in data]
         writer.writerows(data)
+
+def read_csv(filename: str):
+    delimiter = get_delimiter(filename)
+    with open(filename, 'r') as f:
+        reader = csv.DictReader(f, delimiter=delimiter)
+        return [row for row in reader]
+
