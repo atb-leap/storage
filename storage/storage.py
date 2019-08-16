@@ -1,7 +1,5 @@
 
 import os
-import numpy as np
-from itertools import chain
 from urllib.parse import urlparse
 from google.cloud import storage
 
