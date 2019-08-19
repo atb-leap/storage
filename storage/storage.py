@@ -4,11 +4,10 @@ import os
 from .helpers import is_supported_file_format, get_temp_filename, get_extension
 from .csv import save_csv, read_csv
 from .json import dump_json, load_json, read_json, save_json
-from .gcs import is_gcs_bucket, list_files, get_file, put_file, get_prefix
+from .gcs import is_gcs_bucket, list_files, get_file, put_file, delete_blob
 
 def listdir(directory: str):
     if is_gcs_bucket(directory):
-        print(get_prefix(directory))
         return list_files(directory)
     elif os.path.exists(directory):
         return os.listdir(directory)
@@ -17,7 +16,7 @@ def listdir(directory: str):
 
 def delete(filename: str):
     if is_gcs_bucket(filename):
-        raise Exception('Unimplemented feature!')
+        delete_blob(filename)
     else:
         os.remove(filename)
 
@@ -39,7 +38,7 @@ def get(filename: str):
         delete(fname)
 
 # Save an object to a file that is local or in gcs
-def save(data: dict, filename: str):
+def save(data: list, filename: str):
     assert is_supported_file_format(filename),'Unsupported file format! Cannot save {}'.format(filename)
 
     extension = get_extension(filename)

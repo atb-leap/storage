@@ -10,9 +10,10 @@ def save_csv(data, filename, fieldnames = None):
     delimiter = get_delimiter(filename)
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as out:
-        if type(data[0]) is dict:
+        if isinstance(data[0], dict):
             if fieldnames is None:
-                fieldnames = np.unique(list(chain(*[d.keys() for d in data])))
+                #fieldnames = np.unique(list(chain(*[d.keys() for d in data])))
+                fieldnames = data[0].keys()
             writer = csv.DictWriter(out, delimiter=delimiter, fieldnames=fieldnames)
             writer.writeheader()
         else:
