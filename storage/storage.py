@@ -1,31 +1,15 @@
 
 import os
-from urllib.parse import urlparse
-from google.cloud import storage
 
+from .helpers import is_supported_file_format, get_temp_filename, get_extension
 from .csv import save_csv, read_csv
 from .json import dump_json, load_json, read_json, save_json
-
-get_bucket_name = lambda f: urlparse(f).netloc
-get_filename = lambda f: urlparse(f).path[1:]
-get_prefix = lambda f: get_filename(f).rsplit('/', 1)[0] if f.count('/') > 1 else None
-is_gcs_bucket = lambda f: urlparse(f).scheme == 'gs'
-
-# GCS functions
-get_bucket = lambda b: storage.Client().get_bucket(b)
-list_blobs = lambda d: storage.Client().list_blobs(get_bucket_name(d), prefix=get_prefix(d))
-put_object = lambda d, f: get_bucket(get_bucket_name(f)).blob(get_filename(f)).upload_from_string(d)
-get_object = lambda f: get_bucket(get_bucket_name(f)).blob(get_filename(f)).download_as_string()
-list_files = lambda d: [blob.name for blob in list_blobs(d)]
-put_file = lambda i, o: get_bucket(get_bucket_name(o)).blob(get_filename(o)).upload_from_file(i)
-get_file = lambda i, o: get_bucket(get_bucket_name(i)).blob(get_filename(i)).download_to_file(o)
-
-# Helpers
-is_supported_file_format = lambda f: True if os.path.splitext(f)[-1] in ['.json', '.tsv', '.csv'] else False
+from .gcs import is_gcs_bucket, list_files, get_file, put_file, get_prefix
 
 def listdir(directory: str):
     if is_gcs_bucket(directory):
-        return list_files(d)
+        print(get_prefix(directory))
+        return list_files(directory)
     elif os.path.exists(directory):
         return os.listdir(directory)
     else:
@@ -39,10 +23,11 @@ def delete(filename: str):
 
 # Get an object from a file that is local or in gcs
 def get(filename: str):
-    _, extension = os.path.split(filename)
+    assert is_supported_file_format(filename),'Unsupported file format! Cannot get {}'.format(filename)
+    extension = get_extension(filename)
     fname = filename
     if is_gcs_bucket(filename):
-        fname = os.path.join(tempfile.mkdtemp(), os.path.basename(filename))
+        fname = get_temp_filename(filename)
         get_file(filename, fname)
 
     if extension == '.json':
@@ -55,13 +40,10 @@ def get(filename: str):
 
 # Save an object to a file that is local or in gcs
 def save(data: dict, filename: str):
-    if not is_supported_file_format(filename):
-        raise Exception('Unsupported file format requested')
+    assert is_supported_file_format(filename),'Unsupported file format! Cannot save {}'.format(filename)
 
-    _, extension = os.path.splitext(filename)
-    fname = filename
-    if is_gcs_bucket(filename):
-        fname = os.path.join(tempfile.mkdtemp(), os.path.basename(filename))
+    extension = get_extension(filename)
+    fname = get_temp_filename(filename) if is_gcs_bucket(filename) else filename
 
     if extension == '.json':
         save_json(data, fname)
