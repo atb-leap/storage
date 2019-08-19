@@ -3,6 +3,7 @@ A simple storage library that can get and save files locally and to GCP. The inp
 
 ## Getting started
  - `pip install --upgrade -e git+https://github.com/atb-leap/storage.git#egg=storage`
+ - Setup your GCP credentials `export GOOGLE_APPLICATION_CREDENTIALS="[/path/to/your/credentials.json]"`
 ```python3
 # Demo application that transfers a csv file from GCS to a local json file
 import storage
