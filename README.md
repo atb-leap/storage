@@ -17,3 +17,4 @@ storage.save(data, output_file)
 ### Getting started
  - `python3 -m venv venv && source venv/bin/activate` (Optional but recommended)
  - `pip install -r requirements.txt`
+ - `pytest`
