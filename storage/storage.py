@@ -38,7 +38,7 @@ def get(filename: str, **kwargs):
         delete(fname)
 
 # Save an object to a file that is local or in gcs
-def save(data: list, filename: str):
+def save(data: list, filename: str, **kwargs):
     assert is_supported_file_format(filename),'Unsupported file format! Cannot save {}'.format(filename)
 
     extension = get_extension(filename)
@@ -47,7 +47,7 @@ def save(data: list, filename: str):
     if extension == '.json':
         save_json(data, fname)
     else:
-        save_csv(data, fname)
+        save_csv(data, fname, **kwargs)
 
     if is_gcs_bucket(filename):
         put_file(fname, filename)
