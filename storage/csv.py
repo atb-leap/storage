@@ -1,6 +1,7 @@
 
 import os
 import csv
+import pandas as pd
 import numpy as np
 from itertools import chain
 
@@ -22,9 +23,12 @@ def save_csv(data, filename, fieldnames = None):
                 data = [[' '.join(d.split())] for d in data]
         writer.writerows(data)
 
-def read_csv(filename: str):
+def read_csv(filename: str, pandas = False):
     delimiter = get_delimiter(filename)
-    with open(filename, 'r') as f:
-        reader = csv.DictReader(f, delimiter=delimiter)
-        return [row for row in reader]
+    if pandas:
+        return pd.read_csv(filename, delimiter=delimiter, header=None)
+    else:
+        with open(filename, 'r') as f:
+            reader = csv.DictReader(f, delimiter=delimiter)
+            return [row for row in reader]
 

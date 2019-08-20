@@ -21,7 +21,7 @@ def delete(filename: str):
         os.remove(filename)
 
 # Get an object from a file that is local or in gcs
-def get(filename: str):
+def get(filename: str, **kwargs):
     assert is_supported_file_format(filename),'Unsupported file format! Cannot get {}'.format(filename)
     extension = get_extension(filename)
     fname = filename
@@ -32,7 +32,7 @@ def get(filename: str):
     if extension == '.json':
         return read_json(fname)
     else:
-        return read_csv(fname)
+        return read_csv(fname, **kwargs)
 
     if is_gcs_bucket(filename):
         delete(fname)
