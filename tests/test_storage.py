@@ -1,17 +1,19 @@
 
 import os
 import pytest
-
 from assertpy import assert_that
+from dotenv import load_dotenv
+load_dotenv()
+
 from context import storage
 # TODO Mock GCS
 LOCAL_DATA_DIR = os.path.abspath(os.path.join('tests', 'data'))
 get_local_filename = lambda f: os.path.join(LOCAL_DATA_DIR, f)
 get_temp_local_filename = lambda f: storage.helpers.get_temp_filename(f)
 
-TEST_BUCKET = 'test-lake'
-#TEST_BUCKET = 'leap-test-data'
-TEST_SUBDIRECTORY = 'storage_data'
+TEST_BUCKET = os.getenv('TEST_BUCKET')
+TEST_SUBDIRECTORY = os.getenv('TEST_SUBDIRECTORY')
+
 JSON_FILE = 'file1.json'
 CSV_FILE = 'file2.csv'
 TSV_FILE = 'file2.tsv'
@@ -20,7 +22,7 @@ JSON_DATA = storage.json.read_json(get_local_filename(JSON_FILE))
 CSV_DATA = storage.csv.read_csv(get_local_filename(CSV_FILE))
 TSV_DATA = storage.csv.read_csv(get_local_filename(TSV_FILE))
 
-GUID = 'TODO'
+GUID = 'TEST'
 
 REMOTE_DATA_DIR = 'gs://{}/{}'.format(TEST_BUCKET, TEST_SUBDIRECTORY)
 get_gcs_filename = lambda f: '{}/{}'.format(REMOTE_DATA_DIR, f)
