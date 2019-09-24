@@ -16,7 +16,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="storage",
-    version="0.0.1",
+    version="0.0.2",
     author="Zane McCaig",
     author_email="zmccaig@atb.com",
     description="A python library for getting and saving files locally and in google cloud storage",
