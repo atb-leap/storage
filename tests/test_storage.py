@@ -1,6 +1,7 @@
 
 import os
 import pytest
+import pandas as pd
 from assertpy import assert_that
 from dotenv import load_dotenv
 load_dotenv()
@@ -107,6 +108,12 @@ def test_save_csv_to_local(teardown):
     local_file = get_temp_local_filename(CSV_FILE)
     teardown.delete(local_file)
     storage.save(CSV_DATA, local_file)
+    assert_that(storage.get(local_file)).is_equal_to(CSV_DATA)
+
+def test_save_pandas_to_csv(teardown):
+    local_file = get_temp_local_filename(CSV_FILE)
+    teardown.delete(local_file)
+    storage.save(pd.DataFrame(CSV_DATA), local_file)
     assert_that(storage.get(local_file)).is_equal_to(CSV_DATA)
 
 def test_save_tsv_to_gcs(teardown):

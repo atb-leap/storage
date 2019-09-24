@@ -25,7 +25,10 @@ def save_csv(data, filename, fieldnames = None, ignore_header = False):
     delimiter = get_delimiter(filename)
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, 'w') as out:
-        if isinstance(data[0], dict):
+        if isinstance(data, pd.DataFrame):
+            data.to_csv(filename, index=False)
+            return
+        elif isinstance(data[0], dict):
             if fieldnames is None:
                 fieldnames = data[0].keys()
             writer = csv.DictWriter(out, delimiter=delimiter, fieldnames=fieldnames, quoting=csv.QUOTE_NONNUMERIC)
