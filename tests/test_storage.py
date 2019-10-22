@@ -18,10 +18,12 @@ TEST_SUBDIRECTORY = os.getenv('TEST_SUBDIRECTORY')
 JSON_FILE = 'file1.json'
 CSV_FILE = 'file2.csv'
 TSV_FILE = 'file2.tsv'
-FILES = [JSON_FILE, CSV_FILE, TSV_FILE]
+BLOB_FILE = 'file3.txt'
+FILES = [JSON_FILE, CSV_FILE, TSV_FILE, BLOB_FILE]
 JSON_DATA = storage.json.read_json(get_local_filename(JSON_FILE))
 CSV_DATA = storage.csv.read_csv(get_local_filename(CSV_FILE))
 TSV_DATA = storage.csv.read_csv(get_local_filename(TSV_FILE))
+BLOB_DATA = storage.blob.read_blob(get_local_filename(BLOB_FILE))
 
 GUID = 'TEST'
 
@@ -66,6 +68,10 @@ def test_get_tsv_from_gcs():
     remote_file = get_gcs_filename(TSV_FILE)
     assert_that(storage.get(remote_file)).is_equal_to(TSV_DATA)
 
+def test_get_blob_from_gcs():
+    remote_file = get_gcs_filename(BLOB_FILE)
+    assert_that(storage.get(remote_file)).is_equal_to(BLOB_DATA)
+
 def test_get_json_from_local():
     local_file = get_local_filename(JSON_FILE)
     assert_that(storage.get(local_file)).is_equal_to(JSON_DATA)
@@ -77,6 +83,10 @@ def test_get_csv_from_local():
 def test_get_tsv_from_local():
     local_file = get_local_filename(TSV_FILE)
     assert_that(storage.get(local_file)).is_equal_to(TSV_DATA)
+
+def test_get_blob_from_local():
+    local_file = get_local_filename(BLOB_FILE)
+    assert_that(storage.get(local_file)).is_equal_to(BLOB_DATA)
 
 # listdir tests
 def test_listdir_gcs():
@@ -127,3 +137,15 @@ def test_save_tsv_to_local(teardown):
     teardown.delete(local_file)
     storage.save(TSV_DATA, local_file)
     assert_that(storage.get(local_file)).is_equal_to(TSV_DATA)
+
+def test_save_blob_to_gcs(teardown):
+    remote_file = get_temp_gcs_filename(BLOB_FILE)
+    teardown.delete(remote_file)
+    storage.save(BLOB_DATA, remote_file)
+    assert_that(storage.get(remote_file)).is_equal_to(BLOB_DATA)
+
+def test_save_blob_to_local(teardown):
+    local_file = get_temp_local_filename(BLOB_FILE)
+    teardown.delete(local_file)
+    storage.save(BLOB_DATA, local_file)
+    assert_that(storage.get(local_file)).is_equal_to(BLOB_DATA)

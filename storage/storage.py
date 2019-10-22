@@ -1,7 +1,8 @@
 
 import os
 
-from .helpers import is_supported_file_format, get_temp_filename, get_extension
+from .helpers import get_temp_filename, get_extension
+from .blob import save_blob, read_blob
 from .csv import save_csv, read_csv
 from .json import dump_json, load_json, read_json, save_json
 from .gcs import is_gcs_bucket, list_files, get_file, put_file, delete_blob
@@ -22,7 +23,6 @@ def delete(filename: str):
 
 # Get an object from a file that is local or in gcs
 def get(filename: str, **kwargs):
-    assert is_supported_file_format(filename),'Unsupported file format! Cannot get {}'.format(filename)
     extension = get_extension(filename)
     fname = filename
     if is_gcs_bucket(filename):
@@ -30,24 +30,28 @@ def get(filename: str, **kwargs):
         get_file(filename, fname)
 
     if extension == '.json':
-        return read_json(fname)
+        result = read_json(fname)
+    elif extension == '.tsv' or extension == '.csv':
+        result = read_csv(fname, **kwargs)
     else:
-        return read_csv(fname, **kwargs)
+        result = read_blob(fname)
 
     if is_gcs_bucket(filename):
         delete(fname)
 
+    return result
+
 # Save an object to a file that is local or in gcs
 def save(data: list, filename: str, **kwargs):
-    assert is_supported_file_format(filename),'Unsupported file format! Cannot save {}'.format(filename)
-
     extension = get_extension(filename)
     fname = get_temp_filename(filename) if is_gcs_bucket(filename) else filename
 
     if extension == '.json':
         save_json(data, fname)
-    else:
+    elif extension == '.tsv' or extension == '.csv':
         save_csv(data, fname, **kwargs)
+    else:
+        save_blob(data, fname)
 
     if is_gcs_bucket(filename):
         put_file(fname, filename)
