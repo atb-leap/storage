@@ -1,1 +1,18 @@
 buildPack: leap-python
+pipelineConfig:
+  pipelines:
+    pullRequest:
+      promote:
+        replace: true
+
+    release:
+      preBuild:
+        steps:
+        - sh: echo "TODO Update version number"
+      promote:
+        replace: true
+        steps:
+        - dir: ./charts/REPLACE_ME_APP_NAME
+          steps:
+          - sh: jx step changelog --version v\$(cat ../../VERSION)
+            name: changelog
