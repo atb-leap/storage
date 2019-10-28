@@ -1,18 +1,21 @@
-buildPack: leap-python
+buildPack: classic
+file: 'python/pipeline.yaml'
 pipelineConfig:
   pipelines:
     pullRequest:
-      promote:
+      build:
         replace: true
+        steps:
+        - sh: pytest
+          name: python-pytest
 
     release:
-      preBuild:
+      setVersion:
         steps:
-        - sh: echo "TODO Update version number"
-      promote:
+        - sh: jx step changelog --version v\$(cat ../../VERSION)
+          name: changelog
+      build:
         replace: true
         steps:
-        - dir: ./charts/REPLACE_ME_APP_NAME
-          steps:
-          - sh: jx step changelog --version v\$(cat ../../VERSION)
-            name: changelog
+        - sh: pytest
+          name: python-pytest
