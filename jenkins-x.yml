@@ -1,14 +1,15 @@
 buildPack: leap-python
 pipelineConfig:
   pipelines:
-    replace: true
     pullRequest:
+      replace: true
       build:
         steps:
         - image: python
         - sh: pytest
           name: python-pytest
     release:
+      replace: true
       setVersion:
         steps:
         - sh: echo \$(jx-release-version) > VERSION
