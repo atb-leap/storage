@@ -1,21 +1,25 @@
 buildPack: classic
-file: 'python/pipeline.yaml'
 pipelineConfig:
   pipelines:
     pullRequest:
       build:
-        replace: true
         steps:
+        - image: python
         - sh: pytest
           name: python-pytest
-
     release:
       setVersion:
         steps:
+        - sh: echo \$(jx-release-version) > VERSION
+          name: next-version
+          comment: so we can retrieve the version in later steps
+        # TODO set the version in source?
+        - sh: jx step tag --version \$(cat VERSION)
+          name: tag-version
         - sh: jx step changelog --version v\$(cat ../../VERSION)
           name: changelog
       build:
-        replace: true
         steps:
+        - image: python
         - sh: pytest
           name: python-pytest
