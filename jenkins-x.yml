@@ -1,6 +1,7 @@
-buildPack: classic
+buildPack: leap-python
 pipelineConfig:
   pipelines:
+    replace: true
     pullRequest:
       build:
         steps:
