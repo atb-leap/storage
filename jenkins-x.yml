@@ -6,7 +6,8 @@ pipelineConfig:
         replace: true
         steps:
         - image: python:3
-        - sh: pip install -r requirements.txt && python -m pytest
+        - sh: python --version
+        - sh: pip3 install -r requirements.txt && pytest
           name: python-pytest
       postBuild:
         replace: true
@@ -27,7 +28,7 @@ pipelineConfig:
         replace: true
         steps:
         - image: python:3
-        - sh: pip install -r requirements.txt && python -m pytest
+        - sh: pip3 install -r requirements.txt && pytest
           name: python-pytest
       promote:
         replace: true
