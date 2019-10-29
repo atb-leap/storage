@@ -5,10 +5,10 @@ pipelineConfig:
       build:
         replace: true
         steps:
+        - name: python-pytest
           image: python:3
           command:
             python --version && pip install -r requirements.txt && pytest
-          name: python-pytest
       postBuild:
         replace: true
       promote:
