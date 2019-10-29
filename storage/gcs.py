@@ -25,3 +25,14 @@ get_object = lambda f: get_blob(f).download_as_string()
 
 put_file = lambda i, o: get_blob(o).upload_from_filename(i)
 get_file = lambda i, o: get_blob(i).download_to_filename(o)
+
+file_exists = lambda f: get_blob(f).exists()
+
+def copy_file(source_filename: str, dest_filename: str):
+    source_bucket = get_bucket(get_bucket_name(source_filename))
+    source_blob = get_blob(source_filename)
+    destination_bucket = get_bucket(get_bucket_name(dest_filename))
+    #copy file to destination bucket
+    source_bucket.copy_blob(source_blob, destination_bucket, get_filename(dest_filename))
+
+    return
