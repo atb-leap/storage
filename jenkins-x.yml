@@ -1,1 +1,33 @@
 buildPack: leap-python
+pipelineConfig:
+  pipelines:
+    pullRequest:
+      build:
+        replace: true
+        steps:
+        - name: python-pytest
+          image: python:3
+          command: python --version && pip install -r requirements.txt && pytest
+      postBuild:
+        replace: true
+      promote:
+        replace: true
+    release:
+      setVersion:
+        steps:
+        - sh: echo \$(jx-release-version) > VERSION
+          name: next-version
+          comment: so we can retrieve the version in later steps
+        # TODO set the version in source?
+        - sh: jx step tag --version \$(cat VERSION)
+          name: tag-version
+        - sh: jx step changelog --version v\$(cat ../../VERSION)
+          name: changelog
+      build:
+        replace: true
+        steps:
+        - image: python:3
+        - sh: pip3 install -r requirements.txt && pytest
+          name: python-pytest
+      promote:
+        replace: true
